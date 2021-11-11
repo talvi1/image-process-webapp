@@ -1,0 +1,19 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login Form</title>
+    </head>
+
+
+      <body>
+        <h1>Login</h1>
+         <form action="{{url_for('login')}}" method="post">
+             Username <input type="text" name="username"><br>
+             Password <input type="password" name="password"><br>
+        <input type="submit" value="Login" name="login">
+        <input type="submit" value="Forgot Password" name="forgot" />
+        </form>
+        <div class='error'>{{error_msg if error_msg != None}}</div>
+    </body>
+</html>

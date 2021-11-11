@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<p><a href="/home">Home</a>     <a href="/upload">Upload Images</a>     <a href="/view-images">View Uploaded Images</a> <a href="/logout">Logout</a></p>
+<html>
+<head>
+    <h1>
+        User Uploaded Images
+    </h1>
+</head>
+<body>
+    {% for x in image_list %}
+    <div>
+    <a href="{{url_for('show_transformations', variable=x)}}">
+    <img  src="{{url_for('static', filename=x)}}" alt="{{x}}" width="250" height="250"/>
+    </a>
+    </div>
+    {% endfor %}
+</body>
+</html>

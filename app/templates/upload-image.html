@@ -1,0 +1,19 @@
+<html>
+<p><a href="/home">Home</a>     <a href="/upload">Upload Images</a>     <a href="/view-images">View Uploaded Images</a> <a href="/logout">Logout</a></p>
+<body>
+    <h1>Upload Images to be Transformed</h1>
+    <h3>Select local image or enter a url to upload image.</h3>
+
+<form action="{{url_for('upload_image')}}" method="post" enctype="multipart/form-data">
+Select Image to Upload:
+<input type="file" name="image" id="image"><br>
+<input type="submit" name="image" value="Submit">
+</form>
+<div class='error'>{{error_msg if error_msg != None}}</div>
+<form action="{{url_for('upload_image')}}" method="post" enctype="multipart/form-data">
+    Enter URL of Image to Upload:
+    <input type="text" name="image-url"><br>
+    <input type="submit" name="url" value="Submit">
+    </form>
+</body>
+</html>

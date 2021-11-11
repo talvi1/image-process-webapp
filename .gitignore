@@ -1,0 +1,6 @@
+venv/
+error.log
+access.log
+config.py
+__pychace__
+static/

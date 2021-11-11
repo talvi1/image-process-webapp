@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<p><a href="/home">Home</a>     <a href="/upload">Upload Images</a>     <a href="/view-images">View Uploaded Images</a> <a href="/logout">Logout</a></p>
+
+<body>
+
+<h1>See Uploaded Image Below</h1>
+
+<div>
+<img src="{{url_for('static', filename=imagename)}}" width="250" height="250"/>
+
+<div>
+    <img src="{{url_for('static', filename=blur)}}" width="250" height="250"/>
+</div>
+</div>
+<div>
+    <img src="{{url_for('static', filename=shade)}}" width="250" height="250"/>
+</div>
+<div>
+    <img src="{{url_for('static', filename=spread)}}" width="250" height="250"/>
+</div> 
+</body>
+</html>
+

@@ -1,0 +1,7 @@
+gunicorn
+flask
+bcrypt
+smtplib
+mysql-connector
+Wand
+Requests
