@@ -2,5 +2,5 @@ venv/
 error.log
 access.log
 config.py
-__pychace__
+__pycache__
 static/
