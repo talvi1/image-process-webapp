@@ -1,4 +1,4 @@
 #!venv/bin/python
 from app import webapp
 #webapp.run()
-webapp.run(host='0.0.0.0')
+webapp.run(host='0.0.0.0', debug=True,use_reloader=False)

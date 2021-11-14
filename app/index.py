@@ -246,4 +246,10 @@ def api_upload():
                 }
                 }
             
-    
+@webapp.route('/health-check', methods=['GET', 'POST'])
+def health_check():
+    """
+    """   
+    return {
+                "Status": 200
+                }
