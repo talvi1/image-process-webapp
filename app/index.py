@@ -251,9 +251,9 @@ def api_upload():
             img.save(filename=fname_spread)
             spread_size = os.path.getsize(fname_spread)
         s3.upload_file(image_path, mybucket, image_name)
-        s3.upload_file(fname_blur, mybucket, file_uuid+'-blur'+fext)
-        s3.upload_file(fname_shade, mybucket, file_uuid+'-shade'+fext)
-        s3.upload_file(fname_spread, mybucket, file_uuid+'-spread'+fext)
+        s3.upload_file(fname_blur, mybucket, file_uuid+'-blur'+file_ext)
+        s3.upload_file(fname_shade, mybucket, file_uuid+'-shade'+file_ext)
+        s3.upload_file(fname_spread, mybucket, file_uuid+'-spread'+file_ext)
         
         return {
                 "success": True,
