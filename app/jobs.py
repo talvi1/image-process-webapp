@@ -4,15 +4,15 @@ import time
 from datetime import datetime, timedelta
 import re
 import boto3
-
+from ec2_metadata import ec2_metadata
 
 scheduler = APScheduler()
 scheduler.init_app(webapp)
 scheduler.start()
 
+client = boto3.client('cloudwatch')
 
-
-@scheduler.task('interval', id='publish_http_metrics', seconds=5, misfire_grace_time=900)
+@scheduler.task('interval', id='publish_http_metrics', seconds=60, misfire_grace_time=900)
 def publish_http_request_rate():
     with open('access.log') as f:
         lines = f.readlines()
@@ -26,15 +26,50 @@ def publish_http_request_rate():
         log_time = log_msg[first+1:second-6]
         datetime_log = datetime.strptime(log_time, '%d/%b/%Y:%H:%M:%S')
         one_min = timedelta(minutes=1)
-       # print(log_msg)
         health_check = log_msg.find("ELB-HealthChecker") == -1
-       # print(log_msg.find("ELB-HealthChecker"))
         if (datetime_log > (datetime.now()-one_min)):
             if health_check:
                 request_in_last_min.append(log_msg)
             count+=1
         else:
             in_time = False
-    print(len(request_in_last_min))
+    client = boto3.client('cloudwatch')
+    response = client.put_metric_data(
+        Namespace='HTTP Request Rate',
+        MetricData=[
+            {
+                'MetricName': 'HTTP Requests Per Minute',
+                'Dimensions': [
+                    {
+                        'Name': 'Instance ID',
+                        'Value': ec2_metadata.instance_id
+                    },
+                ],
+                'Timestamp': datetime.now(),
+                'Value': len(request_in_last_min),
+                'Unit': 'Count'
+            },
+        ]
+    )
 
 
+@scheduler.task('interval', id='publish_active_status_metric', seconds=60, misfire_grace_time=900)
+def publish_active_status():
+
+    response = client.put_metric_data(
+        Namespace='Worker Status',
+        MetricData=[
+            {
+                'MetricName': 'Worker Status',
+                'Dimensions': [
+                    {
+                        'Name': 'InstanceID',
+                        'Value': ec2_metadata.instance_id
+                    },
+                ],
+                'Timestamp': datetime.now(),
+                'Value': 1,
+                'Unit': 'Count'
+            },
+        ]
+    )

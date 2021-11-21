@@ -7,10 +7,10 @@
     </h1>
 </head>
 <body>
-    {% for x in image_list %}
+    {% for x in image_addr %}
     <div>
-    <a href="{{url_for('show_transformations', variable=x)}}">
-    <img  src="{{url_for('static', filename=x)}}" alt="{{x}}" width="250" height="250"/>
+    <a href="{{url_for('show_transformations', variable=x[1])}}">
+    <img  src="{{x[0]}}" alt="Image Not Found" width="250" height="250"/>
     </a>
     </div>
     {% endfor %}

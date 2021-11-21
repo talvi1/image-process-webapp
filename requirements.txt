@@ -5,3 +5,5 @@ mysql-connector
 Wand
 Requests
 Flask-APScheduler
+ec2-metadata
+boto3

@@ -11,7 +11,8 @@ def connect_to_database():
     return mysql.connector.connect(user=db_config['user'], 
                                     password=db_config['password'], 
                                     host=db_config['host'],
-                                    database=db_config['database'])
+                                    database=db_config['database'],
+                                    port=db_config['port'])
 
 def get_db():
     db = getattr(g, '_database', None)

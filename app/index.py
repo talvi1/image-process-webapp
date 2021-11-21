@@ -7,7 +7,11 @@ import os
 import bcrypt
 from app.config import db_config
 from wand.image import Image
+import boto3
 
+s3 = boto3.client('s3')
+mybucket = 'webapp-images-ece1779'
+s3address = 'https://webapp-images-ece1779.s3.amazonaws.com/'
 webapp.config['UPLOAD_PATH'] = 'app/static' 
 webapp.config['MAX_CONTENT_LENGTH'] = 10*1024*1024
 
@@ -73,20 +77,12 @@ def upload_image():
             image_file.save(image_path)
             session["image_uploaded"] = image_name
             add_image()
+            s3_upload()
             return redirect(url_for('show_image'))
     return render_template('upload-image.html')
 
-
-def add_image():
-    """add_image() - helper function to insert uploaded image reference 
-    into database and save image transformations into local directory.
-    """
-    con = get_db()
-    cursor = con.cursor()
-    query = '''INSERT INTO images (username, image) 
-                                VALUES (%s, %s)'''                         
-    cursor.execute(query,(session["username"], session["image_uploaded"]))
-    con.commit()
+def s3_upload():
+    image_name = session["image_uploaded"]
     fname, fext = os.path.splitext(session["image_uploaded"])
     fpath = os.path.join(webapp.config['UPLOAD_PATH'] + '/', session["image_uploaded"])
     fname_blur = os.path.join(webapp.config['UPLOAD_PATH'] + '/', fname +'-blur'+ fext)
@@ -101,6 +97,22 @@ def add_image():
     with Image(filename=fpath) as img:
         img.spread(radius=8.0)
         img.save(filename=fname_spread)
+    s3.upload_file(fpath, mybucket, image_name)
+    s3.upload_file(fname_blur, mybucket, fname+'-blur'+fext)
+    s3.upload_file(fname_shade, mybucket, fname+'-shade'+fext)
+    s3.upload_file(fname_spread, mybucket, fname+'-spread'+fext)
+
+def add_image():
+    """add_image() - helper function to insert uploaded image reference 
+    into database and save image transformations into local directory.
+    """
+    con = get_db()
+    cursor = con.cursor()
+    query = '''INSERT INTO images (username, image) 
+                                VALUES (%s, %s)'''                         
+    cursor.execute(query,(session["username"], session["image_uploaded"]))
+    con.commit()
+
 
 @webapp.route('/image-uploaded', methods=['GET'])
 def show_image():
@@ -129,10 +141,11 @@ def view_images():
     query = '''SELECT image FROM images WHERE username =%s'''
     cursor.execute(query, (username,))
     result = cursor.fetchall()
-    image_list = []
+    image_addr = []
     for i in range(len(result)):
-        image_list.append(result[i][0])
-    return render_template('view-images.html', image_list=image_list)
+        addr = s3address + result[i][0]
+        image_addr.append([addr, result[i][0]])
+    return render_template('view-images.html', image_addr=image_addr)
 @webapp.route('/transformation/<variable>', methods=['GET'])
 def show_transformations(variable):
     """show_transformations() - shows image transformations if an image is clicked on.
@@ -140,10 +153,12 @@ def show_transformations(variable):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     file, file_ext = os.path.splitext(variable)
-    image_orig = file + file_ext
-    image_blur = file +'-blur'+ file_ext
-    image_shade = file +'-shade'+ file_ext
-    image_spread = file +'-spread'+ file_ext
+    print(file)
+    print(file_ext)
+    image_orig = s3address + file + file_ext
+    image_blur = s3address + file +'-blur'+ file_ext
+    image_shade = s3address + file +'-shade'+ file_ext
+    image_spread = s3address + file +'-spread'+ file_ext
     return render_template('transformed.html', imagename=image_orig, blur=image_blur, shade=image_shade, 
                         spread=image_spread)
 
@@ -235,6 +250,11 @@ def api_upload():
             spread_size = img.size
             img.save(filename=fname_spread)
             spread_size = os.path.getsize(fname_spread)
+        s3.upload_file(image_path, mybucket, image_name)
+        s3.upload_file(fname_blur, mybucket, file_uuid+'-blur'+fext)
+        s3.upload_file(fname_shade, mybucket, file_uuid+'-shade'+fext)
+        s3.upload_file(fname_spread, mybucket, file_uuid+'-spread'+fext)
+        
         return {
                 "success": True,
                 "payload":

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `webapp`.`recover` (
     `ID` INT NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(50) NOT NULL,
     `recoverykey` BINARY(50) NOT NULL,
-    PRIMARY KEY ('ID')
+    PRIMARY KEY (`ID`)
 )
 ENGINE = InnoDB;
 
