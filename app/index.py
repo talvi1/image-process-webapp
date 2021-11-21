@@ -153,8 +153,6 @@ def show_transformations(variable):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     file, file_ext = os.path.splitext(variable)
-    print(file)
-    print(file_ext)
     image_orig = s3address + file + file_ext
     image_blur = s3address + file +'-blur'+ file_ext
     image_shade = s3address + file +'-shade'+ file_ext
